@@ -40,6 +40,7 @@
                         <button
                             class="w-100 btn btn-lg btn-primary mb-3"
                             type="submit"
+                            @click="register($event)"
                         >
                             Зарегистрироваться
                         </button>
@@ -62,7 +63,47 @@ export default {
     data() {
         return {};
     },
-    created() {},
-    methods: {},
+    created() {
+        this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/products")
+            .then((response) => {
+                console.log(response.data.content);
+            });
+    },
+    methods: {
+        register(e) {
+            e.preventDefault();
+
+            this.errors = {
+                name: null,
+                email: null,
+                password: null,
+            };
+            this.$axios.get("/sanctum/csrf-cookie").then((response) => {
+                this.$axios
+                    .post("api-samohod/signup", {
+                        name: this.name,
+                        email: this.email,
+                        password: this.password,
+                    })
+                    .then((response) => {
+                        console.log(response);
+                        // if (response.data.status == 200) {
+                        //     window.location.href =
+                        //         "/user/" + response.data.user_id;
+                        // } else {
+                        //     this.error = response.data.message;
+                        // }
+                    })
+                    .catch((err) => {
+                        console.log(err.response.data.warning.warnings[0].fio);
+                        // if (err.response.data.errors.email) {
+                        //     this.errors.email =
+                        //         err.response.data.errors.email[0];
+                        // }
+                    });
+            });
+        },
+    },
 };
 </script>

@@ -10,20 +10,22 @@ use Illuminate\Validation\ValidationException;
 
 class userController extends Controller
 {
-    
-    public function register(Request $req){
 
-        try{
+    public function register(Request $req)
+    {
+
+
+        try {
 
             $fields = $req->validate([
-                'fio' => 'required|string',
+                'name' => 'required|string',
                 'email' => 'required|email|string|unique:users',
                 'password' => 'required|min:8'
             ]);
-        }catch(ValidationException $e){            
-                $errors = [];
-                foreach ($e->errors() as $err => $messages) {
-                    foreach ($messages as $message) {
+        } catch (ValidationException $e) {
+            $errors = [];
+            foreach ($e->errors() as $err => $messages) {
+                foreach ($messages as $message) {
                     $errors[] = [
                         $err => $message,
                     ];
@@ -31,16 +33,15 @@ class userController extends Controller
             }
             return response()->json([
                 'warning' => [
-                    "code"=> 422,
-                    'message'=> 'Несоответствие требованиям',
+                    "code" => 422,
+                    'message' => 'Несоответствие требованиям',
                     'warnings' => $errors
                 ]
-        
-            
-            ], 422)->header('status', '422');
 
+
+            ], 422)->header('status', '422');
         }
-        
+
 
         $user = User::create([
             'name' => $fields['fio'],
@@ -48,7 +49,7 @@ class userController extends Controller
             'password' => Hash::make($fields['password']),
             'role' => 'client'
         ]);
-        
+
 
         $token = $user->createToken('userToken')->plainTextToken;
 
@@ -57,21 +58,21 @@ class userController extends Controller
         ];
 
         return response($response, 201)->header('status', '201');
-
     }
 
 
-    public function login(Request $req){
+    public function login(Request $req)
+    {
 
-        try{
+        try {
             $fields = $req->validate([
                 'email' => 'required|string',
                 'password' => 'required|string'
             ]);
-        }catch(ValidationException $e){            
-                $errors = [];
-                foreach ($e->errors() as $err => $messages) {
-                    foreach ($messages as $message) {
+        } catch (ValidationException $e) {
+            $errors = [];
+            foreach ($e->errors() as $err => $messages) {
+                foreach ($messages as $message) {
                     $errors[] = [
                         $err => $message,
                     ];
@@ -79,23 +80,22 @@ class userController extends Controller
             }
             return response()->json([
                 'warning' => [
-                    "code"=> 422,
-                    'message'=> 'Несоответствие требованиям',
+                    "code" => 422,
+                    'message' => 'Несоответствие требованиям',
                     'warnings' => $errors
                 ]
 
-            
-            ], 422)->header('status', '422');
 
+            ], 422)->header('status', '422');
         }
 
         $user = User::where('email', $fields['email'])->first();
 
-        if(!$user || !Hash::check($fields['password'], $user->password)) {
+        if (!$user || !Hash::check($fields['password'], $user->password)) {
             return response([
                 'warning' => [
-                    "code"=> 401,
-                    'message'=> 'Ненеудачный вход',
+                    "code" => 401,
+                    'message' => 'Ненеудачный вход',
                 ]
             ], 401)->header('status', '401');
         }
@@ -107,22 +107,20 @@ class userController extends Controller
         ];
 
         return response($response, 200)->header('status', '200');
-
     }
 
 
-    public function logout(Request $req) {
-        
+    public function logout(Request $req)
+    {
+
         auth()->user()->tokens()->delete();
 
         $response = [
-            'content'=>[
+            'content' => [
                 'message' => 'Выход'
             ]
         ];
 
         return response($response, 200)->header('status', '200');
-
     }
-    
 }
