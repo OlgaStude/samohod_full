@@ -19,9 +19,9 @@ class CreateProductsTable extends Migration
             $table->string('img');
             $table->foreignId('categories_id')->constrained();
             $table->string('manufacturer');
-            $table->string('year');
+            $table->integer('year');
             $table->string('model');
-            $table->string('price');
+            $table->integer('price');
             $table->timestamps();
         });
     }

@@ -21,6 +21,9 @@
     </main>
 </template>
 
+<style></style>
+
+
 <script>
 export default {
     name: "Login",

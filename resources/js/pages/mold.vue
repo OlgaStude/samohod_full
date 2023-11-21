@@ -2,6 +2,8 @@
   <div class="row">Home page</div>
 </template>
 
+<style></style>
+
 <script>
 export default {
   name: "Home",

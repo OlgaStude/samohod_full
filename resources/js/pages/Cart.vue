@@ -1,131 +1,153 @@
 <template>
-    <main>
-        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            200р.<small class="text-muted fw-light">
-                                &times; 2 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-
-                        <button type="button" class="btn btn-lg btn-info mb-3">
-                            +
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-warning mb-3"
-                        >
-                            &minus;
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-outline-danger mb-3"
-                        >
-                            Удалить из корзины
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            100р.<small class="text-muted fw-light">
-                                &times; 1 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                        <button type="button" class="btn btn-lg btn-info mb-3">
-                            +
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-warning mb-3"
-                        >
-                            &minus;
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-outline-danger mb-3"
-                        >
-                            Удалить из корзины
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            300р.<small class="text-muted fw-light">
-                                &times; 3 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                        <button type="button" class="btn btn-lg btn-info mb-3">
-                            +
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-warning mb-3"
-                        >
-                            &minus;
-                        </button>
-                        <button
-                            type="button"
-                            class="btn btn-lg btn-outline-danger mb-3"
-                        >
-                            Удалить из корзины
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <header>
+        <a href="/">О нас</a>
+        <a href="/catalog">Каталог</a>
+        <a href="/where">Где нас найти?</a>
+        <div>
+            <a v-if="is_admin" href="/admin">Админ панель</a>
+            <a v-else href="/cart">Корзина</a>
+            <button @click="logout">выход</button>
         </div>
-        <div class="row justify-content-center gap-1">
-            <h2 class="mb-5">Итоговая стоимость: 600р.</h2>
-            <button
-                class="col-6 btn btn-lg btn-outline-info mb-3"
-                type="button"
-            >
-                Назад
-            </button>
-            <button type="button" class="col-6 btn btn-lg btn-primary mb-3">
-                Оформить заказ
-            </button>
+    </header>
+    <main>
+        <form v-if="order_form_is_on" action="">
+            <p>Подтвердите пароль для формирования заказа</p>
+            <input v-model="password" type="password" name="password" id="password" placeholder="Пароль">
+            <p v-if="password_message != ''">{{ password_message }}</p>
+            <p v-else>{{ order_message }}</p>
+            <button @click="order">Сформировать заказ</button>
+            <button @click="close_order_form">Закрыть форму</button>
+        </form>
+        <a href="/orders">Список заказов</a>
+        <button @click="open_order_form">Оформить заказ</button>
+        <div v-for="product in products">
+            <img :src="'/storage/printer_imgs/'+product.img" alt="">
+            {{ product.name }}
+            {{ product.price }}
+            <button @click="delete_from_cart($event, product.id)">Удалить из корзины</button>
         </div>
     </main>
 </template>
+
+<style></style>
 
 <script>
 export default {
     name: "Home",
     data() {
-        return {};
+        return {
+            is_admin: false,
+            products: [],
+            order_message: '',
+            password_message: '',
+            order_form_is_on: false,
+            password: '',
+            user_email: ''
+        };
     },
-    created() {},
-    methods: {},
+    created() {
+        this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/getowninfo",{
+                headers: { Authorization: 'Bearer '+ localStorage.token }
+            })
+            .then((response) => {
+                this.user_email = response.data.email;
+                if(response.data.role == 'admin'){
+                    this.is_admin = true
+                }
+            });
+            this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/cart",{
+                headers: { Authorization: 'Bearer '+ localStorage.token }
+            })
+            .then((response) => {
+                this.products = response.data.content
+            });
+    },
+    methods: {
+        open_order_form(e){
+            e.preventDefault();
+            this.order_form_is_on = true;
+        },
+        close_order_form(e){
+            e.preventDefault();
+            this.order_form_is_on = false;
+        },
+        order(e){
+            this.order_message = ''
+            this.password_message = ''
+            e.preventDefault();
+            this.$axios
+            .request({
+                url: "http://127.0.0.1:8000/api-samohod/checkpassword",
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                },
+                data: {
+                    password: this.password,
+                    email: this.user_email
+                }
+            })
+            .then((response) => {
+                this.$axios
+            .request({
+                url: "http://127.0.0.1:8000/api-samohod/order/",
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                }
+            })
+            .then((response) => {
+                this.products = []
+                this.order_message = response.data.content.message
+                this.password = ''
+            }).catch((err) => {
+                this.order_message = err.response.data.content.message
+              
+          });
+            }).catch((err) => {
+                this.password_message = err.response.data.warning.message
+              
+            });
+            
+        },
+        delete_from_cart(e, id){
+            e.preventDefault();
+            this.$axios
+            .request({
+                url: "http://127.0.0.1:8000/api-samohod/cart/"+id,
+                method: "DELETE",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                }
+            })
+            .then((response) => {
+                this.products = response.data.content.content
+            });
+        },
+        logout() {
+            console.log(localStorage.token);
+            this.$axios
+            .request({
+                url: "http://127.0.0.1:8000/api-samohod/logout",
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                }
+            })
+            .then((response) => {
+                localStorage.removeItem('token');
+                window.location.href = "/";
+            });
+        }
+    },
+    
+    beforeRouteEnter(to, from, next) {
+    if (!localStorage.token) {
+      return next("/");
+    }
+    next();
+}
 };
 </script>

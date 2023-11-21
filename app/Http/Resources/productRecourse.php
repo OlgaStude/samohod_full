@@ -21,7 +21,8 @@ class productRecourse extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'img' => $this->img
+            'img' => $this->img,
+            'categories_id' => $this->categories_id
         ];
     }
 }

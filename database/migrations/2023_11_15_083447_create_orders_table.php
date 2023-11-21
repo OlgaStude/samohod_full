@@ -17,6 +17,7 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->foreignId('users_id')->constrained();
             $table->string('products');
+            $table->string('status');
             $table->integer('order_price');
             $table->timestamps();
         });

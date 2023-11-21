@@ -17,15 +17,13 @@ class cartResource extends JsonResource
     public function toArray($request)
     {
 
-
-        if ($this->users_id == auth()->user()->id) {
-
-            return [
-                'id' => $this->id,
-                'product_id' => Product::find($this->products_id)->id,
-                'name' => Product::find($this->products_id)->name,
-                'price' => Product::find($this->products_id)->price,
-            ];
-        }
+        return [
+            'id' => $this->id,
+            'product_id' => Product::find($this->products_id)->id,
+            'name' => Product::find($this->products_id)->name,
+            'price' => Product::find($this->products_id)->price,
+            'img' => Product::find($this->products_id)->img,
+        ];
+        
     }
 }

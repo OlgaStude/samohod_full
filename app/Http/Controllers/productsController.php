@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\productRecourse;
+use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -13,10 +14,28 @@ class productsController extends Controller
 
     public function show()
     {
-
         $products = ['content' =>  productRecourse::collection(Product::orderBy('id', 'desc')->get())];
 
         return response($products, 200)->header('Status', '200');
+    }
+
+    public function reorder_show(Request $req)
+    {
+        if($req->orderby == 'year'){
+            $products = ['content' =>  productRecourse::collection(Product::orderBy('year', 'desc')->get())];
+    
+            return response($products, 200)->header('Status', '200');
+        }
+        if($req->orderby == 'name'){
+            $products = ['content' =>  productRecourse::collection(Product::orderBy('name', 'desc')->get())];
+    
+            return response($products, 200)->header('Status', '200');
+        }
+        if($req->orderby == 'price'){
+            $products = ['content' =>  productRecourse::collection(Product::orderBy('price', 'asc')->get())];
+    
+            return response($products, 200)->header('Status', '200');
+        }
     }
 
 
@@ -97,6 +116,7 @@ class productsController extends Controller
         $product_delete = Product::where('id', '=', $id)->exists();
 
 
+        Cart::where('products_id', '=', $id)->delete();
 
         Product::where('id', '=', $id)->delete();
         $products = Product::all();

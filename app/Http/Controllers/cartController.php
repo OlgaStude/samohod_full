@@ -40,7 +40,7 @@ class cartController extends Controller
     public function show()
     {
 
-        $products = Cart::get();
+        $products = Cart::where('users_id', '=', auth()->user()->id)->get();
 
         $response = ['content' => cartResource::collection($products)];
 
@@ -54,11 +54,14 @@ class cartController extends Controller
         $cart_delete = Cart::where([['id', '=', $id], ['users_id', '=', auth()->user()->id]])->exists();
         Cart::where([['id', '=', $id], ['users_id', '=', auth()->user()->id]])->delete();
 
+        $products = Cart::where('users_id', '=', auth()->user()->id)->get();
+
 
         if ($cart_delete) {
             $response = [
                 'content' => [
-                    'message' => 'Позиция удалена из корзины'
+                    'message' => 'Позиция удалена из корзины',
+                    'content' => cartResource::collection($products)
                 ]
             ];
 

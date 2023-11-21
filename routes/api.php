@@ -24,10 +24,13 @@ Route::post('/login', [userController::class, 'login']);
 
 
 Route::get('/products', [productsController::class, 'show']);
+Route::post('/productsreorder', [productsController::class, 'reorder_show']);
 
+Route::get('/getcategories', [categoryController::class, 'getCategory']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [userController::class, 'logout']);
+    Route::post('/checkpassword', [userController::class, 'checkPassword']);
     Route::get('/getowninfo', [userController::class, 'getOwnInfo']);
 
     Route::post('/cart/{product_id}', [cartController::class, 'add']);
@@ -35,13 +38,14 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/cart', [cartController::class, 'show']);
 
     Route::post('/order', [orderController::class, 'order']);
+    Route::post('/changeorderstatus', [orderController::class, 'change_status']);
     Route::get('/order', [orderController::class, 'show']);
+    Route::get('/getallorders', [orderController::class, 'allOrders']);
 
     Route::post('/product', [productsController::class, 'add']);
-    Route::delete('/product/{id}', [productsController::class, 'delete']);
     Route::post('/product/{id}', [productsController::class, 'update']);
+    Route::delete('/product/{id}', [productsController::class, 'delete']);
 
     Route::post('/addcategory', [categoryController::class, 'addCategory']);
-    Route::get('/getcategories', [categoryController::class, 'getCategory']);
     Route::post('/deletecategory', [categoryController::class, 'categoryDelete']);
 });

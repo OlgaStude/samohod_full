@@ -16,6 +16,9 @@
 </header>
 </template>
 
+<style></style>
+
+
 <script>
 export default {
   name: "Home",

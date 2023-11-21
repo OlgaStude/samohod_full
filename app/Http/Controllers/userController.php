@@ -83,6 +83,7 @@ class userController extends Controller
     public function login(Request $req)
     {
 
+
         try {
             $fields = $req->validate([
                 'email' => 'required|string',
@@ -148,5 +149,18 @@ class userController extends Controller
         $user = User::find(auth()->user()->id);
 
         return $user;
+    }
+
+    public function checkPassword(Request $req){
+        $user = User::where('email', $req->email)->first();
+
+        if (!$user || !Hash::check($req->password, $user->password)) {
+            return response([
+                'warning' => [
+                    "code" => 401,
+                    'message' => 'Неверный пароль',
+                ]
+            ], 401)->header('status', '401');
+        }
     }
 }

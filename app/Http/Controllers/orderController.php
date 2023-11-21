@@ -39,7 +39,7 @@ class orderController extends Controller
         }
 
 
-        $new_order = Order::create(['products' => trim($products_str), 'order_price' => $order_price, 'users_id' => auth()->user()->id]);
+        $new_order = Order::create(['products' => trim($products_str), 'status' => 'Новый', 'order_price' => $order_price, 'users_id' => auth()->user()->id]);
 
         Cart::where('users_id', '=', auth()->user()->id)->delete();
 
@@ -68,5 +68,53 @@ class orderController extends Controller
         $response = ['content' =>  orderResource::collection($orders), 'price_all' => $price_all];
 
         return response($response, 200)->header('Status', '200');
+    }
+
+    public function change_status(Request $req){
+
+        $product_update = Order::where('id', '=', $req->id)->exists();
+
+
+        if (!$product_update) {
+            $response = [
+                'content' => [
+                    'message' => 'Товар не существует'
+                ]
+            ];
+
+            return response($response, 422)->header('status', '422');
+        }
+
+        if($req->status == 'yes'){
+            Order::where('id', '=', $req->id)->update(['status' => 'Подтверждён']);
+        }
+        if($req->status == 'no'){
+            Order::where('id', '=', $req->id)->update(['status' => 'Отменён']);
+        }
+
+
+    }
+
+    public function allOrders(){
+        
+        if (auth()->user()->role == 'admin') {
+            $orders = Order::get();
+
+            foreach ($orders as $order) {
+                $order->products = explode(' ', $order->products);
+            }
+    
+            $response = ['content' =>  orderResource::collection($orders)];
+    
+            return response($response, 200)->header('Status', '200');
+        }
+        $response = [
+            'content' => [
+                'code' => '403',
+                'message' => 'Доступ для вашей группы запрещён'
+            ]
+        ];
+
+        return response($response, 403)->header('status', '403');
     }
 }

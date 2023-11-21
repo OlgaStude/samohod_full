@@ -49,8 +49,30 @@
       <button @click="close_form">Закрыть</button>
   </form>
 
+
+  <div>
+    <div v-for="order in orders">
+      <div>
+
+        <p>{{ order.user_name }}</p>
+        <p>{{ order.time }}</p>
+        <div v-for="product in order.products">
+          <p>{{ product.name }}</p>
+          <p>{{ product.price }}</p>
+        </div>
+        <p>{{ order.status }}</p>
+      </div>
+      <div v-if="order.status == 'Новый'">
+        <button @click="change_order_status($event, 'yes', order.id)">Потвердить заказ</button>
+        <button @click="change_order_status($event, 'no', order.id)">Отменить заказ</button>
+      </div>
+    </div>
+  </div>
+
   </main>
 </template>
+
+<style></style>
 
 <script>
 
@@ -76,14 +98,13 @@ export default {
       },
       products: [],
       show_form: false,
-      product_id: 0
+      product_id: 0,
+      orders: []
     };
   },
   created() {
     this.$axios
-            .get("http://127.0.0.1:8000/api-samohod/getcategories",{
-                headers: { Authorization: 'Bearer '+ localStorage.token }
-            })
+            .get("http://127.0.0.1:8000/api-samohod/getcategories")
             .then((response) => {
                 this.categories = response.data;
             });
@@ -92,6 +113,14 @@ export default {
             .get("http://127.0.0.1:8000/api-samohod/products")
             .then((response) => {
                 this.products = response.data.content;
+            });
+            this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/getallorders",{
+                headers: { Authorization: 'Bearer '+ localStorage.token }
+            })
+            .then((response) => {
+                console.log(response.data.content)
+                this.orders = response.data.content
             });
             
   },
@@ -211,6 +240,31 @@ export default {
               });
               
           });
+    },
+    change_order_status(e, status, id){
+      e.preventDefault()
+            this.$axios
+            .request({
+                url: "http://127.0.0.1:8000/api-samohod/changeorderstatus",
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                },
+                data: {
+                  id: id,
+                  status: status
+                }
+            })
+            .then((response) => {
+                this.$axios
+              .get("http://127.0.0.1:8000/api-samohod/getallorders",{
+                  headers: { Authorization: 'Bearer '+ localStorage.token }
+              })
+              .then((response) => {
+                  console.log(response.data.content)
+                  this.orders = response.data.content
+              });
+            });
     },
     logout() {
             console.log(localStorage.token);

@@ -34,6 +34,8 @@
   </main>
 </template>
 
+<style></style>
+
 <script>
 
 import axios from 'axios'
@@ -86,7 +88,6 @@ export default {
         model: null,
         price: null,
       }
-      console.log(this.$refs.img.files[0])
       this.$axios
             .request({
                 url: "http://127.0.0.1:8000/api-samohod/product",
@@ -106,7 +107,7 @@ export default {
                 }
             })
             .then((response) => {
-                console.log(response.data)
+                console.log(response.data.content.message)
                 this.product_add_success = response.data.content.message
                 this.category = ''
                 this.name = null
@@ -114,7 +115,6 @@ export default {
                 this.year = null
                 this.model = null
                 this.price = null
-                this.product_add_success = ''
                 this.$refs.img.files[0] = null
             }).catch((err) => {
               console.log(err.response.data.warning.warnings)
