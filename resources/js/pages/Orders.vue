@@ -1,146 +1,81 @@
 <template>
+    <header>
+        <a href="/">О нас</a>
+        <a href="/catalog">Каталог</a>
+        <a href="/where">Где нас найти?</a>
+        <div>
+            <a v-if="is_admin" href="/admin">Админ панель</a>
+            <a v-else href="/cart">Корзина</a>
+            <button @click="logout">выход</button>
+        </div>
+    </header>
     <main>
-        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center bg-light">
-            <h2 class="w-100">Заказ №1</h2>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            200р.<small class="text-muted fw-light">
-                                &times; 2 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                    </div>
+        <div>
+            <div v-for="order in orders">
+                <div v-for="product in order.products">
+                    <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
+                    <p>{{ product.price }}</p>
                 </div>
+                <p>{{ order.status }}</p>
             </div>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            100р.<small class="text-muted fw-light">
-                                &times; 1 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            300р.<small class="text-muted fw-light">
-                                &times; 3 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <h2 class="w-100">Итоговая стоимость: 600р.</h2>
-        </div>
-        <div class="row row-cols-1 row-cols-md-3 mb-3 text-center bg-light">
-            <h2 class="w-100">Заказ №2</h2>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            200р.<small class="text-muted fw-light">
-                                &times; 2 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            100р.<small class="text-muted fw-light">
-                                &times; 1 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col">
-                <div class="card mb-4 rounded-3 shadow-sm">
-                    <div class="card-header py-3">
-                        <h4 class="my-0 fw-normal">Название товара</h4>
-                    </div>
-                    <div class="card-body">
-                        <h1 class="card-title pricing-card-title">
-                            300р.<small class="text-muted fw-light">
-                                &times; 3 шт.</small
-                            >
-                        </h1>
-                        <p>
-                            Описание товара Описание товара Описание товара
-                            Описание товара Описание товара Описание товара
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <h2 class="w-100">Итоговая стоимость: 600р.</h2>
-        </div>
-
-        <div class="row justify-content-center gap-1">
-            <button
-                class="col-6 btn btn-lg btn-outline-info mb-3"
-                type="button"
-            >
-                Назад
-            </button>
         </div>
     </main>
 </template>
+
+<style></style>
+
 
 <script>
 export default {
     name: "Orders",
     data() {
-        return {};
+        return {
+            is_admin: false,
+            orders: []
+        };
     },
-    created() {},
-    methods: {},
+    created() {
+        this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/getowninfo",{
+                headers: { Authorization: 'Bearer '+ localStorage.token }
+            })
+            .then((response) => {
+                if(response.data.role == 'admin'){
+                    this.is_admin = true
+                }
+            });
+            this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/order",{
+                headers: { Authorization: 'Bearer '+ localStorage.token }
+            })
+            .then((response) => {
+                console.log(response.data.content)
+                this.orders = response.data.content
+            });
+    },
+    methods: {
+        
+        logout() {
+            console.log(localStorage.token);
+            this.$axios
+            .request({
+                url: "http://127.0.0.1:8000/api-samohod/logout",
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + localStorage.token,
+                }
+            })
+            .then((response) => {
+                localStorage.removeItem('token');
+                window.location.href = "/";
+            });
+        }
+    },
+    beforeRouteEnter(to, from, next) {
+    if (!localStorage.token) {
+      return next("/");
+    }
+    next();
+}
 };
 </script>

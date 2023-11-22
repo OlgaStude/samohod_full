@@ -1,22 +1,19 @@
 <template>
-    <header>
-        <a href="/">О нас</a>
-        <a href="/catalog">Каталог</a>
-        <a href="/where">Где нас найти?</a>
-        <div v-if="is_logged">
-            <a v-if="is_admin" href="/admin">Админ панель</a>
-            <a v-else href="/cart">Корзина</a>
-            <button @click="logout">выход</button>
-        </div>
-        <div v-else>
-            <a href="/login">Авторизация</a>
-            <a href="/registration">Регистрация</a>
-        </div>
+  <header>
+    <a href="/">О нас</a>
+    <a href="/catalog">Каталог</a>
+    <a href="/where">Где нас найти?</a>
+    <div v-if="is_logged">
+        <a v-if="is_admin" href="/admin">Админ панель</a>
+        <a v-else href="/cart">Корзина</a>
+        <button @click="logout">выход</button>
+    </div>
+    <div v-else>
+        <a href="/login">Авторизация</a>
+        <a href="/registration">Регистрация</a>
+    </div>
 
-    </header>
-    <main>
-        
-    </main>
+</header>
 </template>
 
 <style></style>
@@ -24,16 +21,15 @@
 
 <script>
 export default {
-    name: "Home",
-    data() {
-        return {
-            is_logged: false,
+  name: "Home",
+  data() {
+    return {
+      is_logged: false,
             is_admin: false,
-            
-        };
-    },
-    created() {
-        if(localStorage.token){
+    };
+  },
+  created() {
+    if(localStorage.token){
             this.is_logged = true
             this.$axios
             .get("http://127.0.0.1:8000/api-samohod/getowninfo",{
@@ -45,9 +41,9 @@ export default {
                 }
             });
         }
-    },
-    methods: {
-        logout() {
+  },
+  methods: {
+    logout() {
             console.log(localStorage.token);
             this.$axios
             .request({
@@ -62,7 +58,6 @@ export default {
                 window.location.href = "/";
             });
         }
-        
-    },
+  },
 };
 </script>
