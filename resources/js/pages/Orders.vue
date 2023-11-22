@@ -1,19 +1,19 @@
 <template>
     <header>
-        <a href="/">О нас</a>
-        <a href="/catalog">Каталог</a>
-        <a href="/where">Где нас найти?</a>
-        <div>
-            <a v-if="is_admin" href="/admin">Админ панель</a>
-            <a v-else href="/cart">Корзина</a>
-            <button @click="logout">выход</button>
+        <a class="about" href="/">О нас</a>
+        <a class="catalogue" href="/catalog">Каталог</a>
+        <a class="where" href="/where">Где нас найти?</a>
+        <div class="admin_div">
+            <a v-if="is_admin" href="/admin" class="admin">Админ панель</a>
+            <a v-else href="/cart" class="cart">Корзина</a>
+            <a @click="logout" class="cart">Выйти</a>
         </div>
     </header>
     <main>
         <div>
             <div v-for="order in orders">
                 <div v-for="product in order.products">
-                    <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
+                    <p>{{ product.name }}</p>
                     <p>{{ product.price }}</p>
                 </div>
                 <p>{{ order.status }}</p>

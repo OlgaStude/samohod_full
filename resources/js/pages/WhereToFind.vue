@@ -1,16 +1,16 @@
 <template>
   <header>
-    <a href="/">О нас</a>
-    <a href="/catalog">Каталог</a>
-    <a href="/where">Где нас найти?</a>
-    <div v-if="is_logged">
+    <a class="about" href="/">О нас</a>
+    <a class="catalogue" href="/catalog">Каталог</a>
+    <a class="where underline" href="/where">Где нас найти?</a>
+    <div v-if="is_logged" class="admin_div">
         <a v-if="is_admin" href="/admin">Админ панель</a>
-        <a v-else href="/cart">Корзина</a>
-        <button @click="logout">выход</button>
+        <a v-else href="/cart" class="cart">Корзина</a>
+        <a @click="logout" class="logout">Выйти</a>
     </div>
-    <div v-else>
-        <a href="/login">Авторизация</a>
-        <a href="/registration">Регистрация</a>
+    <div v-else class="guest_nav">
+        <a href="/login" class="auth">Авторизация</a>
+        <a href="/registration" class="register_nav">Регистрация</a>
     </div>
 
 </header>

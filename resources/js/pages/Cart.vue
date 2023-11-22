@@ -1,12 +1,12 @@
 <template>
     <header>
-        <a href="/">О нас</a>
-        <a href="/catalog">Каталог</a>
-        <a href="/where">Где нас найти?</a>
-        <div>
+        <a class="about" href="/">О нас</a>
+        <a class="catalogue" href="/catalog">Каталог</a>
+        <a class="where" href="/where">Где нас найти?</a>
+        <div class="admin_div">
             <a v-if="is_admin" href="/admin">Админ панель</a>
-            <a v-else href="/cart">Корзина</a>
-            <button @click="logout">выход</button>
+            <a v-else href="/cart" class="cart underline">Корзина</a>
+            <a @click="logout" class="logout">Выйти</a>
         </div>
     </header>
     <main>
@@ -22,7 +22,7 @@
         <button @click="open_order_form">Оформить заказ</button>
         <div v-for="product in products">
             <img :src="'/storage/printer_imgs/'+product.img" alt="">
-            <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
+            {{ product.name }}
             {{ product.price }}
             <button @click="delete_from_cart($event, product.id)">Удалить из корзины</button>
         </div>

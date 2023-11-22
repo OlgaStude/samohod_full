@@ -1,11 +1,11 @@
 <template>
   <header>
-    <a href="/">О нас</a>
-    <a href="/catalog">Каталог</a>
-    <a href="/where">Где нас найти?</a>
-    <div>
-        <a href="/admin">Админ панель</a>
-        <button @click="logout">выход</button>
+    <a class="about" href="/">О нас</a>
+    <a class="catalogue" href="/catalog">Каталог</a>
+    <a class="where" href="/where">Где нас найти?</a>
+    <div class="admin_div"> 
+        <a href="/admin" class="admin">Админ панель</a>
+        <a @click="logout" class="logout">Выйти</a>
     </div>
 
 </header>
@@ -29,12 +29,25 @@
       <input type="price" v-model="price" id="price" placeholder="цена">
       <p>{{ errors.price }}</p>
       <p>{{ product_add_success }}</p>
-      <button id="send_btn" @click="add_product">Регистрация</button>
+      <button id="send_btn" @click="add_product">Добавить товар</button>
   </form>
   </main>
 </template>
 
-<style></style>
+<style>
+
+.admin_div {
+    background-color: #77a6f6;
+    display: inline-block;
+    margin-left: 11%;  
+}
+
+.logout {
+  position: relative;
+  left: 80%;
+}
+
+</style>
 
 <script>
 

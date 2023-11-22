@@ -1,16 +1,16 @@
 <template>
   <header>
-    <a href="/">О нас</a>
-    <a href="/catalog">Каталог</a>
-    <a href="/where">Где нас найти?</a>
-    <div v-if="is_logged">
+    <a class="about" href="/">О нас</a>
+    <a class="catalogue underline" href="/catalog">Каталог</a>
+    <a class="where" href="/where">Где нас найти?</a>
+    <div v-if="is_logged" class="admin_div">
         <a v-if="is_admin" href="/admin">Админ панель</a>
-        <a v-else href="/cart">Корзина</a>
-        <button @click="logout">выход</button>
+        <a v-else href="/cart" class="cart">Корзина</a>
+        <a @click="logout" class="logout">Выйти</a>
     </div>
-    <div v-else>
-        <a href="/login">Авторизация</a>
-        <a href="/registration">Регистрация</a>
+    <div v-else class="guest_nav">
+        <a href="/login" class="auth">Авторизация</a>
+        <a href="/registration" class="register_nav">Регистрация</a>
     </div>
 </header>
 <main>
@@ -28,13 +28,12 @@
                 <input type="radio" @click="filter" :value="categories[i-1].id" name="filter" :id="'filter_'+i">
                 <label :for="'filter_'+i">{{ categories[i-1].name }}</label> 
             </div>
-            <button @click="clear_filter">Сбросить фильтр</button>
         </div>
     </div>
     <div>
         <div v-if="!filter_is_on" v-for="product in products">
           <img :src="'/storage/printer_imgs/'+product.img" alt="">
-          <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
+          {{ product.name }}
           {{ product.price }}
           <button v-if="is_logged" @click="add_to_card($event, product.id)">Добавить в корзину</button>
         </div>
@@ -83,7 +82,6 @@ export default {
         this.$axios
             .get("http://127.0.0.1:8000/api-samohod/products")
             .then((response) => {
-                console.log(response.data.content)
                 this.products = response.data.content;
             });
             this.$axios
@@ -95,23 +93,6 @@ export default {
             });
   },
   methods: {
-    clear_filter(e){
-        e.preventDefault()
-        this.filter_word = ''
-        this.filter_is_on = false
-        var ele = document.getElementsByName("orderby");
-        for(var i=0;i<ele.length;i++)
-            ele[i].checked = false;
-            var ele = document.getElementsByName("filter");
-        for(var i=0;i<ele.length;i++)
-            ele[i].checked = false;
-        this.$axios
-            .get("http://127.0.0.1:8000/api-samohod/products")
-            .then((response) => {
-                console.log(response.data.content)
-                this.products = response.data.content;
-            });
-    },
     add_to_card(e, id){
             this.$axios
             .request({
