@@ -31,7 +31,7 @@
   <div>
     <div v-for="product in products">
       <img :src="'/storage/printer_imgs/'+product.img" alt="">
-      {{ product.name }}
+      <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
       {{ product.price }}
       <button @click="delete_product($event, product.id)">Удалить товар</button>
       <button @click="open_form($event, product.id)">Обновить товар</button>
@@ -57,14 +57,19 @@
         <p>{{ order.user_name }}</p>
         <p>{{ order.time }}</p>
         <div v-for="product in order.products">
-          <p>{{ product.name }}</p>
+          <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
           <p>{{ product.price }}</p>
         </div>
         <p>{{ order.status }}</p>
       </div>
       <div v-if="order.status == 'Новый'">
         <button @click="change_order_status($event, 'yes', order.id)">Потвердить заказ</button>
-        <button @click="change_order_status($event, 'no', order.id)">Отменить заказ</button>
+        <button @click="open_cancel_form">Отменить заказ</button>
+        <div name="cancel_form" class="cancel_form">
+          <textarea name="" id="" v-model="reason" cols="30" rows="10"></textarea>
+          {{ error.reason }}
+          <button @click="change_order_status($event, 'no', order.id)">Отменить заказ</button>
+        </div>
       </div>
     </div>
   </div>
@@ -72,7 +77,13 @@
   </main>
 </template>
 
-<style></style>
+<style>
+
+.cancel_form{
+  display: none;
+}
+
+</style>
 
 <script>
 
@@ -94,12 +105,14 @@ export default {
         category: null,
         updated_name: null,
         updated_price: null,
-        updated_img: null
+        updated_img: null,
+        reason: null
       },
       products: [],
       show_form: false,
       product_id: 0,
-      orders: []
+      orders: [],
+      reason: ''
     };
   },
   created() {
@@ -125,6 +138,14 @@ export default {
             
   },
   methods: {
+    open_cancel_form(e){
+      e.preventDefault()
+      var ele = document.getElementsByName("cancel_form");
+      for(var i=0;i<ele.length;i++)
+      ele[i].style.display = 'none'
+    this.reason = ''
+    e.target.nextElementSibling.style.display = 'block'
+  },
     change_category(e){
       this.category = e.target.value
     },
@@ -148,6 +169,7 @@ export default {
             .then((response) => {
                 this.category_create_success = response.data.content.message
                 this.categories = response.data.content.categories
+                this.new_category = ''
             }).catch((err) => {
               console.log(err.response.data.warning.warnings)
               err.response.data.warning.warnings.forEach(element => {
@@ -252,7 +274,8 @@ export default {
                 },
                 data: {
                   id: id,
-                  status: status
+                  status: status,
+                  reson: this.reason
                 }
             })
             .then((response) => {
@@ -263,8 +286,14 @@ export default {
               .then((response) => {
                   console.log(response.data.content)
                   this.orders = response.data.content
+                  this.reason = ''
+                  e.target.nextElementSibling.style.display = 'none'
               });
-            });
+            }).catch((err) => {
+              this.error.reason = err.response.data.warning.warnings[0].reson
+              
+              
+          });;
     },
     logout() {
             console.log(localStorage.token);

@@ -13,7 +13,7 @@
         <div>
             <div v-for="order in orders">
                 <div v-for="product in order.products">
-                    <p>{{ product.name }}</p>
+                    <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
                     <p>{{ product.price }}</p>
                 </div>
                 <p>{{ order.status }}</p>

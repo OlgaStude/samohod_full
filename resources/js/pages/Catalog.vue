@@ -28,12 +28,13 @@
                 <input type="radio" @click="filter" :value="categories[i-1].id" name="filter" :id="'filter_'+i">
                 <label :for="'filter_'+i">{{ categories[i-1].name }}</label> 
             </div>
+            <button @click="clear_filter">Сбросить фильтр</button>
         </div>
     </div>
     <div>
         <div v-if="!filter_is_on" v-for="product in products">
           <img :src="'/storage/printer_imgs/'+product.img" alt="">
-          {{ product.name }}
+          <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
           {{ product.price }}
           <button v-if="is_logged" @click="add_to_card($event, product.id)">Добавить в корзину</button>
         </div>
@@ -82,6 +83,7 @@ export default {
         this.$axios
             .get("http://127.0.0.1:8000/api-samohod/products")
             .then((response) => {
+                console.log(response.data.content)
                 this.products = response.data.content;
             });
             this.$axios
@@ -93,6 +95,23 @@ export default {
             });
   },
   methods: {
+    clear_filter(e){
+        e.preventDefault()
+        this.filter_word = ''
+        this.filter_is_on = false
+        var ele = document.getElementsByName("orderby");
+        for(var i=0;i<ele.length;i++)
+            ele[i].checked = false;
+            var ele = document.getElementsByName("filter");
+        for(var i=0;i<ele.length;i++)
+            ele[i].checked = false;
+        this.$axios
+            .get("http://127.0.0.1:8000/api-samohod/products")
+            .then((response) => {
+                console.log(response.data.content)
+                this.products = response.data.content;
+            });
+    },
     add_to_card(e, id){
             this.$axios
             .request({

@@ -22,7 +22,7 @@
         <button @click="open_order_form">Оформить заказ</button>
         <div v-for="product in products">
             <img :src="'/storage/printer_imgs/'+product.img" alt="">
-            {{ product.name }}
+            <a :href="$router.resolve({name: 'ProductPage', params: { id: product.id }}).href">{{ product.name }}</a>
             {{ product.price }}
             <button @click="delete_from_cart($event, product.id)">Удалить из корзины</button>
         </div>
