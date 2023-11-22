@@ -1,30 +1,66 @@
-import {createWebHistory, createRouter} from "vue-router";
+import { createWebHistory, createRouter } from "vue-router";
 
-import Home from '../pages/Home.vue';
-import Register from '../pages/Register.vue';
-import Login from '../pages/Login.vue';
-import Dashboard from '../pages/Dashboard.vue';
+import Home from "../pages/Home.vue";
+import Login from "../pages/Login.vue";
+import Order from "../pages/Orders.vue";
+import Registration from "../pages/Registration.vue";
+import Cart from "../pages/Cart.vue";
+import Admin from "../pages/Admin.vue";
+import AddProduct from "../pages/AddProduct.vue";
+import Catalog from "../pages/Catalog.vue";
+import ProductPage from "../pages/ProductPage.vue";
+import WhereToFind from "../pages/WhereToFind.vue";
 
 export const routes = [
     {
-        name: 'home',
-        path: '/',
-        component: Home
+        name: "Home",
+        path: "/",
+        component: Home,
     },
     {
-        name: 'register',
-        path: '/register',
-        component: Register
+        name: "Login",
+        path: "/login",
+        component: Login,
     },
     {
-        name: 'login',
-        path: '/login',
-        component: Login
+        name: "Order",
+        path: "/orders",
+        component: Order,
     },
     {
-        name: 'dashboard',
-        path: '/dashboard',
-        component: Dashboard
+        name: "Registration",
+        path: "/registration",
+        component: Registration,
+    },
+    {
+        name: "Cart",
+        path: "/cart",
+        component: Cart,
+    },
+    {
+        name: "Admin",
+        path: "/admin",
+        component: Admin,
+    },
+    {
+        name: "AddProduct",
+        path: "/addproduct",
+        component: AddProduct,
+    },
+    {
+        name: "Catalog",
+        path: "/catalog",
+        component: Catalog,
+    },
+    {
+        name: "ProductPage",
+        path: "/product/:id",
+        component: ProductPage,
+    },
+    {
+        name: "WhereToFind",
+        path: "/where",
+        component: WhereToFind,
     },
 ];
 
